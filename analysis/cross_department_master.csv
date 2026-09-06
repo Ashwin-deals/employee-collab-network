@@ -1,0 +1,5 @@
+Department,Nodes,Edges (directed),Total emails (weight sum),Density,Avg degree (in+out),Weakly conn. components,Largest WCC (% nodes),Strongly conn. components,Largest SCC (% nodes),Num sub-communities,Modularity (Q),Largest community (% nodes),Communities per WCC
+Dept1,309,3031,61046,0.0318,19.62,9,32.7,81,27.8,11,0.7932,32.7,1.22
+Dept2,162,1772,46772,0.0679,21.88,6,28.4,45,19.8,7,0.6935,19.8,1.17
+Dept3,89,1506,12216,0.1923,33.84,1,100.0,11,88.8,6,0.4295,29.2,6.0
+Dept4,142,1375,48141,0.0687,19.37,6,26.8,24,23.9,6,0.7282,26.8,1.0

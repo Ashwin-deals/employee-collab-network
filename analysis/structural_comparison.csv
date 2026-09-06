@@ -1,0 +1,5 @@
+Department,Nodes,Edges (directed),Total emails (weight sum),Density,Avg degree (in+out),Weakly conn. components,Largest WCC (% nodes),Strongly conn. components,Largest SCC (% nodes)
+Dept1,309,3031,61046,0.0318,19.62,9,32.7,81,27.8
+Dept2,162,1772,46772,0.0679,21.88,6,28.4,45,19.8
+Dept3,89,1506,12216,0.1923,33.84,1,100.0,11,88.8
+Dept4,142,1375,48141,0.0687,19.37,6,26.8,24,23.9

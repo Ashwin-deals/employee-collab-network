@@ -1,0 +1,5 @@
+Department,Num sub-communities,Modularity (Q),Largest community size,Largest community (% nodes),Community size distribution
+Dept1,11,0.7932,101,32.7,"[101, 47, 46, 45, 17, 17, 11, 11, 9, 3, 2]"
+Dept2,7,0.6935,32,19.8,"[32, 32, 29, 23, 19, 14, 13]"
+Dept3,6,0.4295,26,29.2,"[26, 19, 16, 13, 10, 5]"
+Dept4,6,0.7282,38,26.8,"[38, 29, 28, 25, 19, 3]"
