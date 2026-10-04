@@ -12,7 +12,11 @@ structural = pd.read_csv(OUT_DIR / "structural_comparison.csv", index_col="Depar
 community = pd.read_csv(OUT_DIR / "community_summary.csv", index_col="Department")
 
 merged = structural.join(community[["Num sub-communities", "Modularity (Q)",
-                                     "Largest community (% nodes)"]])
+                                     "Largest community (% nodes)",
+                                     "Nodes with cross-community ties (%)",
+                                     "Q min over 20 seeds", "Q max over 20 seeds",
+                                     "Communities min over 20 seeds",
+                                     "Communities max over 20 seeds"]])
 
 # fragmentation ratio: communities found per weakly-connected component
 merged["Communities per WCC"] = (merged["Num sub-communities"] /

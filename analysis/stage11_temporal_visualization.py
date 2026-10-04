@@ -10,6 +10,10 @@ Produces three figures:
   fig_temporal_heatmap.png  — email-volume heatmap (months × departments),
                               useful for spotting shared activity peaks.
 
+Only complete months (InMainWindow in temporal_bursts.csv) are plotted: the
+data cuts off partway through M18 and resumes only for 7 days in M27, so
+the empty months in between are missing data, not zero activity.
+
 Reads:   temporal_structural_evolution.csv, temporal_bursts.csv
 """
 from pathlib import Path
@@ -58,6 +62,13 @@ plt.rcParams.update({
 evol   = pd.read_csv(OUT_DIR / "temporal_structural_evolution.csv")
 bursts = pd.read_csv(OUT_DIR / "temporal_bursts.csv")
 
+main_months = sorted(bursts.loc[bursts["InMainWindow"], "MonthIdx"].unique())
+evol   = evol[evol["MonthIdx"].isin(main_months)]
+bursts = bursts[bursts["MonthIdx"].isin(main_months)]
+WINDOW_NOTE = (f"Complete months only (M{main_months[0]:02d}–M{main_months[-1]:02d}). "
+               "The data stops partway through M18 and resumes for only 7 days in M27; "
+               "the months in between are missing, not zero.")
+
 # ── Figure A: monthly email volume with burst markers ────────────────────────
 fig, axes = plt.subplots(2, 2, figsize=(14, 8), sharex=False)
 fig.suptitle("Monthly email volume per department  (▲ = burst month)",
@@ -75,7 +86,7 @@ for ax, dept in zip(axes.flat, DEPTS):
 
     # rolling mean baseline (active months only)
     dept_b = bursts[bursts["Department"] == dept]
-    rm_active = dept_b[dept_b["EmailVolume"] > 0].set_index("MonthIdx")["RollingMean"]
+    rm_active = dept_b.set_index("MonthIdx")["RollingMean"]
     if not rm_active.empty:
         ax.plot(rm_active.index, rm_active.values, color=MUTED, linewidth=1,
                 linestyle="--", label="rolling mean")
@@ -89,7 +100,7 @@ for ax, dept in zip(axes.flat, DEPTS):
                    marker="^", label="high activity")
 
     # low-activity markers (active months only)
-    b_low = dept_b[dept_b["IsQuiet"] & (dept_b["EmailVolume"] > 0)]
+    b_low = dept_b[dept_b["IsQuiet"]]
     if not b_low.empty:
         qx = b_low["MonthIdx"].values
         qy = d.set_index("MonthIdx").loc[qx, "EmailVolume"].values
@@ -106,7 +117,8 @@ for ax, dept in zip(axes.flat, DEPTS):
         lambda v, _: f"{int(v):,}"))
     ax.spines[["top", "right"]].set_visible(False)
 
-fig.tight_layout(rect=[0, 0, 1, 0.96])
+fig.text(0.5, 0.005, WINDOW_NOTE, ha="center", fontsize=8.5, color=MUTED)
+fig.tight_layout(rect=[0, 0.02, 1, 0.96])
 fig.savefig(OUT_DIR / "fig_temporal_volume.png", dpi=160)
 print("Saved analysis/fig_temporal_volume.png")
 plt.close(fig)
@@ -139,7 +151,8 @@ for row_i, (col, ylabel) in enumerate(metrics):
         ax.spines[["top", "right"]].set_visible(False)
         ax.tick_params(labelsize=8)
 
-fig2.tight_layout(rect=[0, 0, 1, 0.96])
+fig2.text(0.5, 0.005, WINDOW_NOTE, ha="center", fontsize=9, color=MUTED)
+fig2.tight_layout(rect=[0, 0.02, 1, 0.96])
 fig2.savefig(OUT_DIR / "fig_temporal_metrics.png", dpi=160)
 print("Saved analysis/fig_temporal_metrics.png")
 plt.close(fig2)
@@ -151,7 +164,10 @@ pivot = pivot.fillna(0)
 
 fig3, ax3 = plt.subplots(figsize=(16, 3.5))
 im = ax3.imshow(pivot.values, aspect="auto", cmap="YlOrRd", interpolation="nearest")
+ax3.grid(False)
 
+ax3.set_xticks(range(len(main_months)))
+ax3.set_xticklabels([f"M{m:02d}" for m in main_months], fontsize=8)
 ax3.set_yticks(range(len(DEPTS)))
 ax3.set_yticklabels(DEPTS, fontsize=10)
 ax3.set_xlabel("Month index", fontsize=10)
@@ -161,17 +177,16 @@ ax3.set_title("Email volume heatmap — months × departments",
 # activity markers on heatmap
 for dept_i, dept in enumerate(DEPTS):
     for _, br in bursts[(bursts["Department"] == dept) & bursts["IsBurst"]].iterrows():
-        ax3.scatter(br["MonthIdx"] - 1, dept_i,
+        ax3.scatter(main_months.index(br["MonthIdx"]), dept_i,
                     marker="^", color="white", s=55, zorder=5)
-    for _, br in bursts[(bursts["Department"] == dept) & bursts["IsQuiet"]
-                        & (bursts["EmailVolume"] > 0)].iterrows():
-        ax3.scatter(br["MonthIdx"] - 1, dept_i,
+    for _, br in bursts[(bursts["Department"] == dept) & bursts["IsQuiet"]].iterrows():
+        ax3.scatter(main_months.index(br["MonthIdx"]), dept_i,
                     marker="v", color="steelblue", s=55, zorder=5)
 
 cbar = fig3.colorbar(im, ax=ax3, orientation="vertical", pad=0.01)
 cbar.set_label("Emails per month", fontsize=9)
 fig3.text(0.5, -0.04,
-          "▲ = high-activity month (Z > 1.0)   ▼ = low-activity month (Z < −1.0)",
+          "▲ = high-activity month (Z > 1.0)   ▼ = low-activity month (Z < −1.0)   ·   " + WINDOW_NOTE,
           ha="center", fontsize=8, color=MUTED)
 
 fig3.tight_layout()

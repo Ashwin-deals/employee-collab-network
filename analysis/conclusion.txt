@@ -3,260 +3,351 @@
   Descriptive Conclusion: Cross-Department Communication Patterns
 ==========================================================================================
 
-1. DATASET OVERVIEW
+1. DATASET & SOURCE
 ------------------------------------------------------------------------------------------
-The dataset captures intra-department email exchanges across four departments
-(Dept1–Dept4) of a European research institution. Each department is treated as an
-independent directed weighted graph: nodes are employees, directed edges represent email
-flow (src → dst), and edge weight equals the number of emails sent along that channel.
-Node IDs are local to each department and cannot be compared across them.
+Source: the 'email-Eu-core-temporal' dataset from the Stanford Network Analysis Project
+(SNAP), introduced in A. Paranjape, A. R. Benson and J. Leskovec, 'Motifs in Temporal
+Networks', WSDM 2017. It records anonymised emails between members of a large European
+research institution. The four department files (Dept1–Dept4) each contain only emails
+sent between members of the same department; each line is one email: sender, recipient,
+and seconds since that file's first email.
 
-Across all four departments the dataset covers 702 unique employees and 168,175 email
-events in total.
+Each department is treated as an independent directed weighted graph: nodes are employees,
+a directed edge u → v means u emailed v, and edge weight is the number of emails along
+that channel. Node IDs are local to each department and cannot be compared across them.
 
-2. NETWORK SIZE & EMAIL VOLUME
+Across all four departments the data covers 702 employees and 168,175 emails.
+
+Time alignment: every department file starts its clock at its own first email, so the four
+clocks are offset from each other. Cross-correlating each department's hourly email counts
+against the full dataset shows the departments agree with each other to within 6 hours.
+That is negligible at the day and month scales used below, so comparing departments month
+by month is valid.
+
+2. METHODS AND WHY THEY WERE CHOSEN
 ------------------------------------------------------------------------------------------
-    Dept1: 309 employees, 3031 directed edges, 61,046 total emails (avg 20.1 emails per
-  channel).
-    Dept2: 162 employees, 1772 directed edges, 46,772 total emails (avg 26.4 emails per
-  channel).
-    Dept3: 89 employees, 1506 directed edges, 12,216 total emails (avg 8.1 emails per
-  channel).
-    Dept4: 142 employees, 1375 directed edges, 48,141 total emails (avg 35.0 emails per
-  channel).
+  • Weighted directed graphs: email has a sender and a recipient, and repeated emails mean
+  a stronger tie, so direction and weight are both kept.
+  • Density and distinct contacts: measure cohesion: how much of the possible
+  communication actually happens, and how many different colleagues each person deals
+  with.
+  • Weakly / strongly connected components: measure fragmentation (groups that never email
+  each other at all) and directed reachability (whether information can flow round and
+  back).
+  • Reciprocity: measures two-way exchange directly: the share of ties u → v that are
+  answered by v → u. Component size cannot show this, since a strong component only needs
+  a directed cycle, not mutual replies.
+  • Clustering coefficient: measures whether a person's contacts also email each other,
+  distinguishing tight closed teams from broad hub-and-spoke networks.
+  • Degree, betweenness and PageRank centrality: identify the most active people, the
+  brokers who sit on paths between others (unweighted, because weights are counts, not
+  distances), and the most influential people by weighted email flow.
+  • Louvain community detection: finds sub-teams by maximising modularity. Run on the
+  undirected weighted projection, since modularity is defined for undirected graphs, with
+  a fixed seed for reproducibility.
+  • Monthly slices with rolling Z-scores: find months that are unusually high or low
+  relative to their neighbours (centred 5-month window), so slow trends do not mask short
+  swings.
+  • Daily counts: check the monthly view: 30-day bins with an arbitrary start can split or
+  dilute week-long events.
+  • Random baselines and permutation tests: check that results are not what chance alone
+  would produce: clustering is compared with degree-preserving random rewirings of each
+  network, reciprocity with the density (its value in a random graph), and the shared
+  high/low months with randomly shifted versions of each department's monthly series.
 
-Dept1 is the largest department by headcount (309 people). Dept1 carries the highest total
-email volume (61,046 emails), suggesting that sheer department size does not determine
-communication volume — smaller departments can sustain very high message throughput.
-
-3. NETWORK DENSITY & CONNECTIVITY
+3. NETWORK SIZE & EMAIL VOLUME
 ------------------------------------------------------------------------------------------
-Density measures the fraction of all possible directed edges that actually exist (range
-0–1). A high density means most pairs of employees exchange email directly.
+    Dept1: 309 employees, 3031 directed edges, 61,046 emails (198 per person, 20.1 per
+  channel).
+    Dept2: 162 employees, 1772 directed edges, 46,772 emails (289 per person, 26.4 per
+  channel).
+    Dept3: 89 employees, 1506 directed edges, 12,216 emails (137 per person, 8.1 per
+  channel).
+    Dept4: 142 employees, 1375 directed edges, 48,141 emails (339 per person, 35.0 per
+  channel).
+
+Dept1 is both the largest department (309 people) and the busiest (61,046 emails), so
+total volume broadly follows headcount. Intensity is what differs: Dept4 averages 35
+emails per channel and 339 per person, while Dept3 averages only 8 per channel. Dept4
+concentrates its email in a few heavily used channels; Dept3 spreads lighter traffic
+across many contacts.
+
+4. DENSITY & CONNECTIVITY
+------------------------------------------------------------------------------------------
+Density is the fraction of all possible directed edges that actually exist (0–1).
 
   Dept3: density = 0.1923
   Dept4: density = 0.0687
   Dept2: density = 0.0679
   Dept1: density = 0.0318
 
-Dept3 has the highest density (0.1923) — nearly one in five possible email channels is
-actively used. Dept1, the largest department, is the most sparse (0.0318), which is
-expected: as a network grows, density almost always falls because the number of possible
-edges scales with n².
+Dept3 has the highest density (0.1923): about one in 5 possible email channels is used.
+Dept1 is the sparsest (0.0318). Part of this is size, since possible edges grow with n²
+while each person's contacts do not, so density is best read together with connectivity
+below.
 
 Weak connectivity (ignoring edge direction):
   Dept1: 9 components; largest covers 32.7% of employees
   Dept2: 6 components; largest covers 28.4% of employees
-  Dept3: fully connected (single WCC)
+  Dept3: fully connected (single component)
   Dept4: 6 components; largest covers 26.8% of employees
 
-Dept3 is the only department whose members are all reachable from one another when
-ignoring email direction — a single weakly connected component covering 100% of its 89
-employees. Dept1, Dept2, and Dept4 each fragment into multiple isolated sub-networks (6–9
-WCCs), meaning some employee clusters never exchange email with the rest of the department
-even indirectly.
+Dept3 is the only department where everyone is connected to everyone else, directly or
+indirectly. Dept1, Dept2, Dept4 each split into 6–9 separate groups that never email each
+other within the department; the largest group covers only 27–33% of people.
 
-4. DIRECTED REACHABILITY — STRONG COMPONENTS
+5. DIRECTED REACHABILITY & RECIPROCITY
 ------------------------------------------------------------------------------------------
-A strongly connected component (SCC) is a group where every member can reach every other
-member following the direction of email flow. A large largest-SCC means information can
-circulate freely in a feedback loop across most of the department.
+A strongly connected component (SCC) is a set of people who can all reach each other
+following the direction of email. Reciprocity is the share of ties that are answered.
 
-  Dept1: 81 SCCs, largest = 27.8% of employees
-  Dept2: 45 SCCs, largest = 19.8% of employees
-  Dept3: 11 SCCs, largest = 88.8% of employees
-  Dept4: 24 SCCs, largest = 23.9% of employees
+  Dept1: 81 SCCs (71 of them single people), largest = 27.8% of employees; reciprocity = 0.72; 55 people only receive
+  Dept2: 45 SCCs (39 of them single people), largest = 19.8% of employees; reciprocity = 0.82; 30 people only receive
+  Dept3: 11 SCCs (10 of them single people), largest = 88.8% of employees; reciprocity = 0.71; 10 people only receive
+  Dept4: 24 SCCs (18 of them single people), largest = 23.9% of employees; reciprocity = 0.79; 16 people only receive
 
-Dept3 stands out again: 88.8% of employees belong to a single SCC, meaning nearly all of
-them participate in mutual, reciprocal email exchange. In Dept1, despite being the largest
-department, the biggest SCC covers only 27.8% of employees, and there are 81 distinct
-strong components — indicating highly directional or hierarchical flows where most email
-is one-way.
+Reciprocity is high in every department (0.71–0.82): most email relationships are two-way
+everywhere. In a random network with the same density, only 0.03–0.19 of ties would be
+answered, so reciprocity is 4–23× what chance would give. The many SCCs in Dept1, Dept2,
+Dept4 therefore do not mean email is mostly one-way. They come from the fragmentation
+above plus peripheral members: in Dept1, 71 of its 81 SCCs are single people, and 55
+people receive email from colleagues but never send any within the department (consistent
+with distribution lists, or with people whose work happens outside it). Dept3's large SCC
+(89%) follows from it being one connected group.
 
-5. COMMUNICATION BREADTH — AVERAGE DEGREE
+6. COMMUNICATION BREADTH & CLUSTERING
 ------------------------------------------------------------------------------------------
-Average total degree (in-degree + out-degree) measures how many distinct email partners
-each employee has on average.
+  Dept1: 12.5 distinct contacts per person; avg clustering = 0.57 (random baseline 0.10, 5.7× random)
+  Dept2: 12.9 distinct contacts per person; avg clustering = 0.73 (random baseline 0.14, 5.3× random)
+  Dept3: 21.9 distinct contacts per person; avg clustering = 0.52 (random baseline 0.45, 1.2× random)
+  Dept4: 11.7 distinct contacts per person; avg clustering = 0.72 (random baseline 0.15, 4.8× random)
 
-  Dept3: avg degree = 33.84
-  Dept2: avg degree = 21.88
-  Dept1: avg degree = 19.62
-  Dept4: avg degree = 19.37
+Dept3 people each deal with about 22 different colleagues, against roughly 12 elsewhere.
+Yet Dept3 has the lowest clustering (0.52): its contacts span the whole department, so
+many of a person's contacts do not email each other. Dept2 and Dept4 have the highest
+clustering (0.72–0.73): their groups are tight teams where nearly everyone emails
+everyone, but the teams are cut off from each other.
 
-Dept3 has the highest average degree (33.84), meaning each employee communicates directly
-with roughly 17 distinct colleagues on average. This aligns with its very high density and
-tight connectivity.
+The random baselines confirm this. In Dept1, Dept2, Dept4 clustering is 4.8–5.7× what
+randomly rewired networks with the same contact counts produce, so their tight teams are
+real structure. In Dept3 it is only 1.16× random: its clustering is almost entirely
+explained by its high density, with little extra closed-team structure.
 
-6. COMMUNITY STRUCTURE — LOUVAIN MODULARITY
+7. COMMUNITY STRUCTURE — LOUVAIN MODULARITY
 ------------------------------------------------------------------------------------------
-Louvain community detection was run on the undirected weighted projection of each
-department graph. Modularity Q ∈ [0, 1] quantifies how clearly the network separates into
-distinct sub-groups: Q > 0.6 is generally considered strong modular structure; Q < 0.4
-suggests a more cohesive, integrated network.
+Modularity Q measures how strongly a network divides into communities; values above about
+0.3 are commonly taken to indicate meaningful community structure (Newman & Girvan, 2004).
 
-  Dept1: 11 communities, Q = 0.7932, largest community = 32.7% of employees
-  Dept2: 7 communities, Q = 0.6935, largest community = 19.8% of employees
-  Dept3: 6 communities, Q = 0.4295, largest community = 29.2% of employees
-  Dept4: 6 communities, Q = 0.7282, largest community = 26.8% of employees
+  Dept1: 11 communities, Q = 0.7932, largest = 32.7% of employees, 10% of people have ties to another community
+  Dept2: 7 communities, Q = 0.6935, largest = 19.8% of employees, 22% of people have ties to another community
+  Dept3: 6 communities, Q = 0.4295, largest = 29.2% of employees, 94% of people have ties to another community
+  Dept4: 6 communities, Q = 0.7282, largest = 26.8% of employees, 0% of people have ties to another community
 
-Important interpretive caveat: Dept1, Dept2, and Dept4 each have multiple disconnected
-weakly connected components (WCCs). Louvain trivially assigns each isolated WCC to its own
-community, so their high modularity values (0.69–0.79) partly reflect pre-existing network
-disconnection rather than genuine internal sub-group structure. Their 'Communities per
-WCC' ratios of ~1.0–1.2 confirm this: almost every community maps to exactly one WCC.
+Interpretive caveat: Dept1, Dept2, Dept4 are split into disconnected components, and
+Louvain assigns each component to its own community at no cost, so their high Q
+(0.69–0.79) mostly reflects that disconnection. Their communities-per-component ratios
+(1.00–1.22) confirm that almost every community is simply one component; in Dept4 the
+match is exact, with 0% of people tied to another community.
 
-Dept3 is the analytically cleaner case: all employees are in a single WCC, yet Louvain
-still finds 6 distinct communities (Q = 0.43, Communities per WCC = 6.0). This Q, while
-lower than the other departments, represents genuine internal sub-group structure
-discovered within one connected network — not fragmentation inherited from disconnected
-components. Dept3's 6 communities are organic communication clusters.
+Dept3 is the analytically meaningful case: one connected network in which Louvain still
+finds 6 communities with Q = 0.43, above the 0.3 rule of thumb. 94% of its people have
+ties into another community, so these are distinct sub-teams that stay in contact with
+each other.
 
-7. TEMPORAL ANALYSIS — COMMUNICATION DYNAMICS OVER 27 MONTHS
+8. KEY PEOPLE — CENTRALITY
 ------------------------------------------------------------------------------------------
-The dataset spans ~803 days (~27 months). Each department's events were partitioned into
-30-day slices and analysed as independent monthly snapshots. Months 19–26 have zero events
-across all departments (the observation window closes), and month 27 is a short partial
-tail; all activity-pattern analysis below covers the 18 active months only.
+PageRank (weighted) ranks influence through email flow; betweenness ranks brokers on the
+shortest paths between others; degree counts distinct ties. Node IDs are local, so only
+patterns, not people, are compared across departments.
 
-  Monthly email volume statistics (active months only):
-  Dept1: mean=3213, std=1229, min=389, max=5061 emails/month
-  Dept2: mean=2462, std=997, min=280, max=4019 emails/month
-  Dept3: mean=643, std=266, min=117, max=1079 emails/month
-  Dept4: mean=2534, std=1023, min=220, max=4091 emails/month
+  Dept1: top PageRank = node 279, top betweenness = node 279 (0.016); top 5 hold 25% of betweenness, 18% of email volume; 31% are never on a shortest path
+  Dept2: top PageRank = node 24, top betweenness = node 63 (0.004); top 5 hold 25% of betweenness, 27% of email volume; 31% are never on a shortest path
+  Dept3: top PageRank = node 60, top betweenness = node 60 (0.066); top 5 hold 33% of betweenness, 22% of email volume; 14% are never on a shortest path
+  Dept4: top PageRank = node 72, top betweenness = node 111 (0.006); top 5 hold 24% of betweenness, 25% of email volume; 25% are never on a shortest path
 
-High-activity months (Z-score > 1.0 above 5-month rolling mean):
-  Dept1: high → ['M08', 'M13']   low → ['M03', 'M10', 'M14', 'M27']
-  Dept2: high → ['M08', 'M13']   low → ['M03', 'M10', 'M14', 'M27']
-  Dept3: high → ['M08', 'M17']   low → ['M03', 'M10', 'M14']
-  Dept4: high → ['M08', 'M13', 'M16']   low → ['M03', 'M10', 'M14', 'M27']
+Dept1 has one dominant hub: node 279 is first on degree, betweenness and PageRank, with a
+PageRank 2.1× the next person's. All five top brokers sit in the department's largest
+community (101 people), so brokerage happens inside that group, not between groups. This
+is a single point of failure for Dept1's main group.
 
-Month 8 (M08) is a high-activity month in all four departments simultaneously — a
-coordinated surge roughly 8 months into the observation period. This cross-department
-synchrony suggests an institution-wide event (e.g. a project deadline, conference, or end-
-of-semester period) rather than department-specific causes.
+Dept2 is led by a small core: nodes 24, 63, 91 are in the top five on all three measures,
+and node 24 handles 8,594 emails sent and received, the most in the department.
 
-Months 3, 10, and 14 are consistently low across all departments. M14 is the most
-pronounced dip: Dept4 falls to just 562 emails (vs its ~1,783 monthly average), Dept2 to
-1,024, and Dept1 to 1,683 — all well below their baselines and consistent with a shared
-vacation or semester break. M03 and M10 show similar, milder reductions, possibly
-corresponding to mid-semester lulls or shorter holiday periods.
+Dept3 has real brokers: its top betweenness (0.066) is 4× the highest anywhere else, and
+nodes 25, 60 rank top five on all three measures. These are the people connecting its sub-
+teams. Only 14% of Dept3 is never on a shortest path, versus 25–31% elsewhere, so most
+people take some part in passing information on.
 
-Dept3 partially diverges from the others: its second high-activity month is M17 rather
-than M13, suggesting its project cycle or internal calendar differs from the other three
-departments. This is consistent with Dept3 being the most structurally distinct department
-overall.
+Dept4 has no single leader: its top five PageRank scores are nearly equal (the first is
+only 1.2× the fifth), matching a set of self-contained teams of similar weight.
 
-The overall Z-score range across all departments stays within [−1.4, +1.4], meaning no
-month shows an extreme spike. Communication is sustained and relatively steady rather than
-episodic, which aligns with an academic/research environment where collaboration is
-ongoing rather than event-driven.
+Caveat: betweenness is normalised over all pairs of people, and no shortest paths cross
+between disconnected groups, so Dept1, Dept2, Dept4 score lower partly by construction.
+The comparison of shares and patterns above is more reliable than the raw values.
 
-  Structural metric trends over time (active months):
-  Dept1: avg active nodes/month=212, avg degree/month=7.26, density M01=0.0170 → M27=0.0112
-  Dept2: avg active nodes/month=112, avg degree/month=9.94, density M01=0.0433 → M27=0.0256
-  Dept3: avg active nodes/month=68, avg degree/month=7.78, density M01=0.0518 → M27=0.0213
-  Dept4: avg active nodes/month=100, avg degree/month=8.50, density M01=0.0437 → M27=0.0188
-
-Active node counts per month are substantially lower than the departments' total
-headcounts in the static graph, confirming that not every employee is active in every
-month — participation is spread across the observation period, not concurrent.
-
-8. CROSS-DEPARTMENT COMPARISON SUMMARY
+9. TEMPORAL ANALYSIS
 ------------------------------------------------------------------------------------------
-  Most employees                Dept1   (309 nodes)
-  Fewest employees              Dept3   (89 nodes)
-  Most emails (total)           Dept1   (61,046 emails)
-  Highest density               Dept3   (0.1923)
-  Lowest density                Dept1   (0.0318)
-  Best connected (WCC)          Dept3   (1 WCC — 100% reachable)
-  Highest avg degree            Dept3   (33.84)
-  Most genuine modularity       Dept3   (Q=0.43 within a single WCC)
-  Most fragmented               Dept1   (9 WCCs)
-  Shared peak month             All depts   (M08 — institution-wide high activity)
-  Shared low month              All depts   (M14 — likely vacation/semester break)
-  Smoothest temporal profile    Dept3   (max Z ≈ 1.3; no extreme spikes)
+The data is continuous from day 0 to day 527, then has no email at all until day 797,
+after which only 7 more days are recorded. Events were split into 30-day slices (M01, M02,
+…). Only complete months are analysed (M01–M17): the slice the data stops in (M18) and the
+7-day fragment at the end are partial, and their low counts reflect missing days, not
+quiet periods.
 
-9. KEY FINDINGS & INTERPRETATION
+  Monthly email volume (complete months):
+  Dept1: mean=3414, std=1065, min=1605, max=5061 emails/month
+  Dept2: mean=2602, std=893, min=1024, max=4019 emails/month
+  Dept3: mean=682, std=244, min=155, max=1079 emails/month
+  Dept4: mean=2707, std=886, min=562, max=4091 emails/month
+
+  High / low months (Z-score beyond ±1.0 against a centred 5-month rolling mean):
+  Dept1: high → ['M08', 'M13']   low → ['M03', 'M10', 'M14']
+  Dept2: high → ['M08', 'M13']   low → ['M03', 'M10', 'M14']
+  Dept3: high → ['M08']   low → ['M03', 'M10', 'M14']
+  Dept4: high → ['M08', 'M13']   low → ['M03', 'M10', 'M14']
+
+All four departments rise and fall together: M08 is high in every department and M03, M10,
+M14 are low in every department. M13 is high in three departments; in Dept3 it scores Z =
+0.997, just under the cut-off. Since the departments are separate networks, this shared
+rhythm points to institution-wide causes such as calendars, deadlines and holidays.
+
+This synchrony is statistically significant. The ±1 cut-off flags 28% of department-
+months, so any single department's flags could be chance. But 4 months are flagged the
+same way in all four departments, against 0.02 expected when each department's series is
+shifted at random (p = 0.0006, 10,000 permutations).
+
+In M14 every department drops sharply: Dept1 falls to 1,683 emails (49% of its monthly
+average), Dept2 falls to 1,024 emails (39% of its monthly average), Dept3 falls to 155
+emails (23% of its monthly average), Dept4 falls to 562 emails (21% of its monthly
+average).
+
+Monthly Z-scores stay between -1.72 and +1.34: month to month, volume moves within a
+moderate band. The large swings are week-scale, as the daily view shows.
+
+  Daily rhythm:
+  Weekend days carry only 8% of a weekday's email, confirming this is work communication.
+  The weekly view reveals what monthly bins blur:
+    • M08's peak is one intense week: the 7 days around day 238 carry 2.3× a median week's
+    email.
+    • Low periods (below half the median week): days 61–77 (M03, 33% of normal); days
+    186–195 (M07, 36% of normal); days 278–294 (M10, 49% of normal); days 393–422
+    (M14/M15, 31% of normal); days 431–440 (M15, 35% of normal).
+    • The longest break lasts 30 days and straddles M14 and M15, so monthly bins split it.
+    The low periods in M07, M15 do not show up in the monthly analysis at all.
+    • Breaks starting on days 61 and 431 are 370 days apart, which suggests a recurring
+    annual holiday. The actual calendar dates cannot be recovered, because timestamps are
+    relative.
+
+  Structural metrics over time (complete months):
+  Dept1: avg active people/month=216 (of 309), avg degree/month=7.52, density M01=0.0170 → M17=0.0201
+  Dept2: avg active people/month=114 (of 162), avg degree/month=10.29, density M01=0.0433 → M17=0.0505
+  Dept3: avg active people/month=68 (of 89), avg degree/month=8.13, density M01=0.0518 → M17=0.0705
+  Dept4: avg active people/month=100 (of 142), avg degree/month=8.87, density M01=0.0437 → M17=0.0482
+
+In any given month only part of each department is active, so the static networks above
+combine people whose activity is spread across the whole period.
+
+10. CROSS-DEPARTMENT COMPARISON SUMMARY
+------------------------------------------------------------------------------------------
+  Most employees             Dept1   (309 people)
+  Fewest employees           Dept3   (89 people)
+  Most emails (total)        Dept1   (61,046 emails)
+  Most emails per channel    Dept4   (35.0)
+  Highest density            Dept3   (0.1923)
+  Most distinct contacts     Dept3   (21.9 per person)
+  Highest reciprocity        Dept2   (0.82)
+  Highest clustering         Dept2   (0.73)
+  Fully connected            Dept3   (1 component)
+  Most fragmented            Dept1   (9 components)
+  Meaningful modularity      Dept3   (Q=0.43 in one connected network)
+  Most dominant hub          Dept1   (node 279, PageRank 2.1× the next)
+  Strongest broker           Dept3   (max betweenness 0.066)
+  Shared high month          All depts   (M08)
+  Shared low months          All depts   (M03, M10, M14)
+
+11. KEY FINDINGS & INTERPRETATION
 ------------------------------------------------------------------------------------------
 
-  1. Dept3 is the most cohesive department.
-     It is the only department where every employee is reachable from every other (single
-     WCC), 88.8% belong to a mutual-reply SCC, it has the highest density (0.19) and
-     average degree (33.84). Despite its smaller size (89 employees), it sustains a high-
-     bandwidth, tightly-knit communication culture.
+  1. Dept3 is the most cohesive department, organised around brokers rather than cliques.
+     It is the only fully connected department, with the highest density (0.19) and the
+     most contacts per person (22). Its low clustering and strong brokers show a broad
+     network held together by a few well-connected people, with 6 sub-teams that stay in
+     contact.
 
-  2. Dept1 is the most fragmented despite being the largest.
-     With 309 employees, 9 disconnected WCCs, and 81 strong components, most of Dept1's
-     email flow is one-directional or siloed. The largest WCC covers only 32.7% of
-     employees, pointing to isolated sub-teams with little cross-team communication.
+  2. Dept1, Dept2 and Dept4 are collections of separate tight teams.
+     Each splits into 6–9 groups that never email each other within the department. Inside
+     those groups, clustering is 4.8–5.7× what random networks give: genuinely close-knit
+     teams with little contact between them.
 
-  3. Email volume does not scale with headcount.
-     Dept2 (162 employees) and Dept4 (142 employees) both send over 46,000 emails — nearly
-     as many as Dept1 (309 employees, 61,046 emails). This suggests smaller departments
-     can have proportionally more intense communication, possibly driven by tighter
-     collaboration or project-based work.
+  3. Two-way communication is the norm everywhere.
+     Reciprocity is 0.71–0.82 in all four departments, 4–23× chance. Dept1's many strong
+     components come from fragmentation and receive-only members, not from one-way email.
 
-  4. High modularity in Dept1, Dept2, Dept4 is largely structural.
-     Their Q values (0.69–0.79) are inflated because isolated WCCs are treated as separate
-     communities by default. These departments are not 'well-structured into sub-groups';
-     they are simply disconnected. Dept3's Q = 0.43 is the only one reflecting true
-     within-network community formation.
+  4. Departments differ in communication intensity.
+     Dept4 sends 35 emails per channel against Dept3's 8: a few heavy channels versus many
+     light ones.
 
-  5. Dept3's community structure warrants further study.
-     Six communities within a single, nearly fully-bidirectionally connected department
-     suggests distinct functional teams or project groups that still communicate with each
-     other — a healthy balance of specialisation and cross-functional interaction.
+  5. High modularity in Dept1, Dept2 and Dept4 is largely an artefact.
+     Their Q values (0.69–0.79) mostly count already-disconnected components as
+     communities. Dept3's lower Q is the only one reflecting community structure inside
+     one connected network.
 
-  6. M08 is an institution-wide communication peak.
-     All four departments show a high-activity spike at month 8 (Z > 1.0 above their
-     rolling baselines). The simultaneous cross-department surge strongly points to an
-     external institution-level event — a project deadline, conference submission, or end-
-     of-semester period — rather than any department-internal cause.
+  6. Influence is concentrated differently in each department.
+     Dept1 depends on one hub (node 279); Dept2 on a core of 3 people; Dept3 on a few
+     brokers between sub-teams; Dept4 has no single leader.
 
-  7. M14 is a synchronised low-activity period across all departments.
-     Month 14 is the most pronounced shared dip: Dept4 drops to 562 emails (vs ~1,783
-     average), Dept2 to 1,024, Dept1 to 1,683, and Dept3 to 155. This near-zero activity
-     in Dept3 and steep drops elsewhere are consistent with a summer or winter holiday
-     break. M03 and M10 show milder reductions, likely mid-semester lulls.
+  7. All departments follow the same institutional calendar.
+     M08 is high and M03, M10, M14 are low in every department. The department clocks
+     agree to within 6 hours, and a permutation test puts the chance of this much overlap
+     at p = 0.0006.
 
-  8. Communication is sustained rather than episodic.
-     The overall Z-score range across all departments is within [−1.4, +1.4] throughout
-     the 18 active months. There are no extreme volume spikes — email usage is a steady
-     background coordination channel, not a burst-driven medium. This is consistent with
-     an academic/research work environment.
+  8. The real swings are week-long.
+     The M08 peak is a single week at 2.3× normal, and the dips are breaks of 10–30 days
+     where email drops to 31–49% of normal, including one that recurs about a year later.
+     Weekends carry only 8% of a weekday's email.
 
-  9. Dept3's temporal rhythm diverges from the other three.
-     While Dept1, Dept2, and Dept4 all share M08 and M13 as their two highest months,
-     Dept3's second peak falls at M17. Combined with its distinct structural profile
-     (single WCC, highest density, genuine modularity), Dept3 appears to operate on a
-     different internal schedule — possibly a different research cycle or funding period.
-
-10. CONCLUSION
+12. LIMITATIONS & FUTURE WORK
 ------------------------------------------------------------------------------------------
-This analysis combines static network structure with temporal dynamics to give a multi-
-dimensional picture of intra-department email communication across four university
-departments over 27 months (~803 days).
+  • Only email within each department is included, so links between departments are
+  invisible. Groups that look isolated may be connected through other departments.
+  • Email is a proxy for collaboration. Volume may include distribution-list or automated
+  messages, and without message content these cannot be separated out.
+  • The data is anonymised, with no roles or org chart, so communities and hubs cannot be
+  checked against real teams or positions.
+  • Timestamps are relative, so calendar dates (and the cause of each peak or break) are
+  unknown. The 30-day bins are arbitrary, and the data has a long gap after day 527.
+  • Betweenness is not directly comparable between connected and fragmented networks.
+  Louvain is randomised; across 20 seeds Q varies by at most 0.017 and the number of
+  communities by at most 1, so the conclusions do not depend on the seed.
 
-Structurally, Dept3 is the standout department: the only one with full weak connectivity,
-the highest density (0.19) and average degree (33.84), and the only genuinely modular
-community structure (Q = 0.43 within a single connected network). Dept1 is its structural
-opposite — the largest by headcount but the most fragmented, with 9 isolated sub-networks
-and 81 strong components, suggesting hierarchical or siloed communication flows. Dept2 and
-Dept4 sit between these extremes, with moderate density and significant disconnection.
+  Future work:
+  • Analyse the full dataset to see how departments connect to each other.
+  • Study temporal motifs (recurring patterns of who emails whom in sequence), the purpose
+  the dataset was published for.
+  • Track communities month by month to see whether teams merge, split or persist, and
+  test how well past contact predicts future links.
 
-Temporally, all four departments share a common rhythm: a coordinated peak at month 8, a
-shared low at month 14 (consistent with a holiday break), and milder dips at months 3 and
-10. The synchrony of these patterns across independent departments confirms that
-institution-level events — academic calendars, submission deadlines, or breaks — are the
-primary driver of communication volume fluctuations, not department-specific factors. The
-absence of extreme spikes (max Z ≈ 1.3) confirms that email is used as a steady
-coordination channel rather than a crisis-response medium.
+13. CONCLUSION
+------------------------------------------------------------------------------------------
+This analysis combines static network structure, centrality, community detection and
+temporal dynamics to compare email communication in four departments of a European
+research institution over 528 days of continuous data.
 
-For organisational interventions: Dept3 provides a model of tight, reciprocal, well-
-structured communication and is the best reference for what healthy intra-department
-network topology looks like. Dept1 is the highest-priority candidate for bridging isolated
-sub-networks. The shared low at M14 and the broad peak at M08 could be leveraged as
-natural intervention windows — quieter periods for restructuring initiatives, and peak
-periods for knowledge-sharing events.
+Structurally, the departments follow two different models. Dept3 is one connected, broad
+network held together by a few brokers, with sub-teams that stay in contact. Dept1, Dept2
+and Dept4 are each made up of several close-knit teams that never email each other within
+the department; their high modularity reflects that separation rather than well-formed
+sub-groups. Communication is reciprocal in all four, so the difference lies in how the
+teams connect, not in whether people reply.
+
+Temporally, all four departments share one rhythm: the same high and low months, a single
+surge week, multi-week breaks (one recurring about a year later) and quiet weekends.
+Communication volume is driven by institution-wide schedules more than by anything
+department-specific.
+
+Implications for the organisation: Dept1's isolated teams are the clearest candidates for
+deliberate bridging, and its reliance on node 279 is a continuity risk. Dept3 shows what a
+well-connected department looks like, but it too depends on a handful of brokers. The
+shared break periods are natural windows for planned changes, and the surge week shows
+when the whole institution is under the most communication load.
 
 ==========================================================================================

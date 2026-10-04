@@ -1,5 +1,5 @@
-Department,Num sub-communities,Modularity (Q),Largest community size,Largest community (% nodes),Community size distribution
-Dept1,11,0.7932,101,32.7,"[101, 47, 46, 45, 17, 17, 11, 11, 9, 3, 2]"
-Dept2,7,0.6935,32,19.8,"[32, 32, 29, 23, 19, 14, 13]"
-Dept3,6,0.4295,26,29.2,"[26, 19, 16, 13, 10, 5]"
-Dept4,6,0.7282,38,26.8,"[38, 29, 28, 25, 19, 3]"
+Department,Num sub-communities,Modularity (Q),Largest community size,Largest community (% nodes),Nodes with cross-community ties (%),Q min over 20 seeds,Q max over 20 seeds,Communities min over 20 seeds,Communities max over 20 seeds,Community size distribution
+Dept1,11,0.7932,101,32.7,10.4,0.7908,0.7932,10,11,"[101, 47, 46, 45, 17, 17, 11, 11, 9, 3, 2]"
+Dept2,7,0.6935,32,19.8,22.2,0.6914,0.7081,6,7,"[32, 32, 29, 23, 19, 14, 13]"
+Dept3,6,0.4295,26,29.2,94.4,0.4241,0.4305,6,7,"[26, 19, 16, 13, 10, 5]"
+Dept4,6,0.7282,38,26.8,0.0,0.7282,0.7282,6,6,"[38, 29, 28, 25, 19, 3]"

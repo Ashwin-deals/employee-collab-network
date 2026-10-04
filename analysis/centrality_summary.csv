@@ -1,0 +1,5 @@
+Department,Top PageRank node,Top betweenness node,Max betweenness,Top-5 share of betweenness,Top-5 share of PageRank,Top-5 share of email volume,Zero-betweenness nodes (%),"In top-5 of degree, betweenness and PageRank"
+Dept1,279,279,0.0156,0.252,0.096,0.185,31.4,[279]
+Dept2,24,63,0.0044,0.248,0.129,0.274,30.9,"[24, 63, 91]"
+Dept3,60,60,0.0661,0.328,0.182,0.22,13.5,"[25, 60]"
+Dept4,72,111,0.0065,0.237,0.138,0.251,24.6,"[71, 104]"

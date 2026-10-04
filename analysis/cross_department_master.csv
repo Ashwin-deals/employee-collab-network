@@ -1,5 +1,5 @@
-Department,Nodes,Edges (directed),Total emails (weight sum),Density,Avg degree (in+out),Weakly conn. components,Largest WCC (% nodes),Strongly conn. components,Largest SCC (% nodes),Num sub-communities,Modularity (Q),Largest community (% nodes),Communities per WCC
-Dept1,309,3031,61046,0.0318,19.62,9,32.7,81,27.8,11,0.7932,32.7,1.22
-Dept2,162,1772,46772,0.0679,21.88,6,28.4,45,19.8,7,0.6935,19.8,1.17
-Dept3,89,1506,12216,0.1923,33.84,1,100.0,11,88.8,6,0.4295,29.2,6.0
-Dept4,142,1375,48141,0.0687,19.37,6,26.8,24,23.9,6,0.7282,26.8,1.0
+Department,Nodes,Edges (directed),Total emails (weight sum),Density,Avg degree (in+out),Avg distinct contacts,Weakly conn. components,Largest WCC (% nodes),Strongly conn. components,Largest SCC (% nodes),Single-person SCCs,Receive-only people,Send-only people,Reciprocity,Reciprocity (random baseline),Avg clustering,Clustering (random baseline),Clustering vs random (x),Transitivity,Num sub-communities,Modularity (Q),Largest community (% nodes),Nodes with cross-community ties (%),Q min over 20 seeds,Q max over 20 seeds,Communities min over 20 seeds,Communities max over 20 seeds,Communities per WCC
+Dept1,309,3031,61046,0.0318,19.62,12.54,9,32.7,81,27.8,71,55,11,0.7212,0.0318,0.5728,0.1,5.73,0.5352,11,0.7932,32.7,10.4,0.7908,0.7932,10,11,1.22
+Dept2,162,1772,46772,0.0679,21.88,12.9,6,28.4,45,19.8,39,30,8,0.8205,0.0679,0.7258,0.1368,5.31,0.7208,7,0.6935,19.8,22.2,0.6914,0.7081,6,7,1.17
+Dept3,89,1506,12216,0.1923,33.84,21.87,1,100.0,11,88.8,10,10,0,0.7078,0.1923,0.5201,0.4484,1.16,0.4571,6,0.4295,29.2,94.4,0.4241,0.4305,6,7,6.0
+Dept4,142,1375,48141,0.0687,19.37,11.73,6,26.8,24,23.9,18,16,2,0.7884,0.0687,0.716,0.1478,4.84,0.7352,6,0.7282,26.8,0.0,0.7282,0.7282,6,6,1.0

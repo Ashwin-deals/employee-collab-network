@@ -9,14 +9,13 @@ temporal_slices.pkl  — {dept: {"graphs": [DiGraph, ...],
                                 "event_counts": [int, ...],
                                 "month_labels": [str, ...]}}
 """
-import gzip
 import pickle
 from collections import defaultdict
 from pathlib import Path
 
 import networkx as nx
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "email-Eu-core-temporal"
 OUT_DIR  = Path(__file__).resolve().parent
 DEPTS    = ["Dept1", "Dept2", "Dept3", "Dept4"]
 SLICE_DAYS = 30
@@ -25,11 +24,11 @@ SLICE_SEC  = SLICE_DAYS * 86_400
 result = {}
 
 for dept in DEPTS:
-    fpath = DATA_DIR / f"email-Eu-core-temporal-{dept}.gz"
+    fpath = DATA_DIR / f"email-Eu-core-temporal-{dept}.csv"
 
     # bucket events by slice index
     buckets: dict[int, list[tuple[int, int]]] = defaultdict(list)
-    with gzip.open(fpath, "rt") as f:
+    with open(fpath) as f:
         for line in f:
             parts = line.split()
             if not parts:

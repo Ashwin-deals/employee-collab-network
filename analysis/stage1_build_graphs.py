@@ -6,23 +6,22 @@ local node numbering -> treated as 4 fully independent networks.
 Edge weight = number of email events (temporal edges) collapsed onto that
 ordered (src -> dst) pair.
 """
-import gzip
 import pickle
 from pathlib import Path
 
 import networkx as nx
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "email-Eu-core-temporal"
 OUT_DIR = Path(__file__).resolve().parent
 DEPTS = ["Dept1", "Dept2", "Dept3", "Dept4"]
 
 graphs = {}
 
 for dept in DEPTS:
-    fpath = DATA_DIR / f"email-Eu-core-temporal-{dept}.gz"
+    fpath = DATA_DIR / f"email-Eu-core-temporal-{dept}.csv"
     G = nx.DiGraph()
     n_events = 0
-    with gzip.open(fpath, "rt") as f:
+    with open(fpath) as f:
         for line in f:
             parts = line.split()
             if not parts:

@@ -1,0 +1,13 @@
+,Value
+MainWindowLastDay,527
+DataResumesDay,797
+DeptClockSpreadHours,6
+WeekendDays,"[5, 6]"
+WeekendPctOfWeekday,7.6
+MedianWeekEmails,2207
+PeakWeekCentreDay,238
+PeakWeekMonth,M08
+PeakWeekEmails,4989
+PeakWeekVsMedian,2.26
+LongestLowPeriodDays,30
+LowPeriodsAboutOneYearApart,"[(61, 431)]"

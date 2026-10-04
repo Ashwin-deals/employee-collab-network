@@ -1,0 +1,338 @@
+{
+  "depts": {
+    "Dept1": {
+      "nodes": 309,
+      "edges": 3031,
+      "emails": 61046,
+      "per_channel": 20.140547674034973,
+      "per_person": 197.5598705501618,
+      "density": 0.0318,
+      "contacts": 12.54,
+      "wcc": 9,
+      "largest_wcc_pct": 32.7,
+      "scc": 81,
+      "largest_scc_pct": 27.8,
+      "single_scc": 71,
+      "receive_only": 55,
+      "reciprocity": 0.7212,
+      "reciprocity_random": 0.0318,
+      "clustering": 0.5728,
+      "clustering_random": 0.1,
+      "clustering_ratio": 5.73,
+      "communities": 11,
+      "q": 0.7932,
+      "largest_comm_pct": 32.7,
+      "cross_comm_pct": 10.4,
+      "comms_per_wcc": 1.22,
+      "q_min": 0.7908,
+      "q_max": 0.7932,
+      "comms_min": 10,
+      "comms_max": 11,
+      "top_pr_node": 279,
+      "top_pr": 0.034258185341513175,
+      "pr_lead": 2.1008827885174384,
+      "pr_lead5": 2.3427290676992314,
+      "top_btw_node": 279,
+      "top_btw": 0.015615617568068592,
+      "top5_btw_share": 0.252,
+      "top5_email_share": 0.185,
+      "zero_btw_pct": 31.4,
+      "in_all_three": [
+        279
+      ],
+      "top_pr_node_emails": 3432,
+      "clock_offset_h": 24,
+      "brokers_in_largest_comm": true,
+      "largest_comm_size": 101
+    },
+    "Dept2": {
+      "nodes": 162,
+      "edges": 1772,
+      "emails": 46772,
+      "per_channel": 26.395033860045146,
+      "per_person": 288.71604938271605,
+      "density": 0.0679,
+      "contacts": 12.9,
+      "wcc": 6,
+      "largest_wcc_pct": 28.4,
+      "scc": 45,
+      "largest_scc_pct": 19.8,
+      "single_scc": 39,
+      "receive_only": 30,
+      "reciprocity": 0.8205,
+      "reciprocity_random": 0.0679,
+      "clustering": 0.7258,
+      "clustering_random": 0.1368,
+      "clustering_ratio": 5.31,
+      "communities": 7,
+      "q": 0.6935,
+      "largest_comm_pct": 19.8,
+      "cross_comm_pct": 22.2,
+      "comms_per_wcc": 1.17,
+      "q_min": 0.6914,
+      "q_max": 0.7081,
+      "comms_min": 6,
+      "comms_max": 7,
+      "top_pr_node": 24,
+      "top_pr": 0.03545577722623047,
+      "pr_lead": 1.2915680412395247,
+      "pr_lead5": 1.7639693816752935,
+      "top_btw_node": 63,
+      "top_btw": 0.0044379011506862,
+      "top5_btw_share": 0.248,
+      "top5_email_share": 0.274,
+      "zero_btw_pct": 30.9,
+      "in_all_three": [
+        24,
+        63,
+        91
+      ],
+      "top_pr_node_emails": 8594,
+      "clock_offset_h": 25
+    },
+    "Dept3": {
+      "nodes": 89,
+      "edges": 1506,
+      "emails": 12216,
+      "per_channel": 8.111553784860558,
+      "per_person": 137.25842696629215,
+      "density": 0.1923,
+      "contacts": 21.87,
+      "wcc": 1,
+      "largest_wcc_pct": 100.0,
+      "scc": 11,
+      "largest_scc_pct": 88.8,
+      "single_scc": 10,
+      "receive_only": 10,
+      "reciprocity": 0.7078,
+      "reciprocity_random": 0.1923,
+      "clustering": 0.5201,
+      "clustering_random": 0.4484,
+      "clustering_ratio": 1.16,
+      "communities": 6,
+      "q": 0.4295,
+      "largest_comm_pct": 29.2,
+      "cross_comm_pct": 94.4,
+      "comms_per_wcc": 6.0,
+      "q_min": 0.4241,
+      "q_max": 0.4305,
+      "comms_min": 6,
+      "comms_max": 7,
+      "top_pr_node": 60,
+      "top_pr": 0.043530940623516444,
+      "pr_lead": 1.019749272623202,
+      "pr_lead5": 1.5934880688566235,
+      "top_btw_node": 60,
+      "top_btw": 0.0660673758919921,
+      "top5_btw_share": 0.328,
+      "top5_email_share": 0.22,
+      "zero_btw_pct": 13.5,
+      "in_all_three": [
+        25,
+        60
+      ],
+      "top_pr_node_emails": 1214,
+      "clock_offset_h": 29
+    },
+    "Dept4": {
+      "nodes": 142,
+      "edges": 1375,
+      "emails": 48141,
+      "per_channel": 35.01163636363636,
+      "per_person": 339.0211267605634,
+      "density": 0.0687,
+      "contacts": 11.73,
+      "wcc": 6,
+      "largest_wcc_pct": 26.8,
+      "scc": 24,
+      "largest_scc_pct": 23.9,
+      "single_scc": 18,
+      "receive_only": 16,
+      "reciprocity": 0.7884,
+      "reciprocity_random": 0.0687,
+      "clustering": 0.716,
+      "clustering_random": 0.1478,
+      "clustering_ratio": 4.84,
+      "communities": 6,
+      "q": 0.7282,
+      "largest_comm_pct": 26.8,
+      "cross_comm_pct": 0.0,
+      "comms_per_wcc": 1.0,
+      "q_min": 0.7282,
+      "q_max": 0.7282,
+      "comms_min": 6,
+      "comms_max": 6,
+      "top_pr_node": 72,
+      "top_pr": 0.029425717115417135,
+      "pr_lead": 1.0055666468041953,
+      "pr_lead5": 1.1751664919505058,
+      "top_btw_node": 111,
+      "top_btw": 0.006476515561262002,
+      "top5_btw_share": 0.237,
+      "top5_email_share": 0.251,
+      "zero_btw_pct": 24.6,
+      "in_all_three": [
+        71,
+        104
+      ],
+      "top_pr_node_emails": 3112,
+      "clock_offset_h": 30
+    }
+  },
+  "totals": {
+    "nodes": 702,
+    "emails": 168175
+  },
+  "temporal": {
+    "first_month": 1,
+    "last_month": 17,
+    "z_min": -1.715,
+    "z_max": 1.336,
+    "high": {
+      "Dept1": [
+        "M08",
+        "M13"
+      ],
+      "Dept2": [
+        "M08",
+        "M13"
+      ],
+      "Dept3": [
+        "M08"
+      ],
+      "Dept4": [
+        "M08",
+        "M13"
+      ]
+    },
+    "low": {
+      "Dept1": [
+        "M03",
+        "M10",
+        "M14"
+      ],
+      "Dept2": [
+        "M03",
+        "M10",
+        "M14"
+      ],
+      "Dept3": [
+        "M03",
+        "M10",
+        "M14"
+      ],
+      "Dept4": [
+        "M03",
+        "M10",
+        "M14"
+      ]
+    },
+    "dept3_m13_z": 0.997,
+    "monthly_mean": {
+      "Dept1": 3414.294117647059,
+      "Dept2": 2601.529411764706,
+      "Dept3": 682.4117647058823,
+      "Dept4": 2707.4117647058824
+    },
+    "m14": {
+      "Dept1": 1683,
+      "Dept2": 1024,
+      "Dept3": 155,
+      "Dept4": 562
+    },
+    "sync_observed": 4,
+    "sync_expected": 0.02,
+    "sync_p": 0.0006,
+    "sync_perms": 10000,
+    "flagged_share": 0.279,
+    "main_end": 527,
+    "resume_day": 797,
+    "clock_spread_h": 6,
+    "weekend_pct": 7.6,
+    "peak_day": 238,
+    "peak_month": "M08",
+    "peak_ratio": 2.26,
+    "median_week": 2207,
+    "annual_pairs": [
+      [
+        61,
+        431
+      ]
+    ],
+    "low_weeks": [
+      {
+        "start": 61,
+        "end": 77,
+        "months": [
+          "M03"
+        ],
+        "pct": 32.9
+      },
+      {
+        "start": 186,
+        "end": 195,
+        "months": [
+          "M07"
+        ],
+        "pct": 35.8
+      },
+      {
+        "start": 278,
+        "end": 294,
+        "months": [
+          "M10"
+        ],
+        "pct": 49.0
+      },
+      {
+        "start": 393,
+        "end": 422,
+        "months": [
+          "M14",
+          "M15"
+        ],
+        "pct": 31.2
+      },
+      {
+        "start": 431,
+        "end": 440,
+        "months": [
+          "M15"
+        ],
+        "pct": 35.3
+      }
+    ]
+  },
+  "figures": {
+    "fig_networks_2x2": {
+      "path": "/Users/akilan/Library/Application Support/Claude/scratch-workspaces/9e19f909-7ff3-43fe-a56e-f80f1eabf7af/21db9c52-28f7-4454-9c72-372adea3e452/scratch-2026-10-01-354e32/employee-collab-network/analysis/fig_networks_2x2.png",
+      "width": 2210,
+      "height": 2210
+    },
+    "fig_bar_comparison": {
+      "path": "/Users/akilan/Library/Application Support/Claude/scratch-workspaces/9e19f909-7ff3-43fe-a56e-f80f1eabf7af/21db9c52-28f7-4454-9c72-372adea3e452/scratch-2026-10-01-354e32/employee-collab-network/analysis/fig_bar_comparison.png",
+      "width": 2380,
+      "height": 1360
+    },
+    "fig_centrality_top": {
+      "path": "/Users/akilan/Library/Application Support/Claude/scratch-workspaces/9e19f909-7ff3-43fe-a56e-f80f1eabf7af/21db9c52-28f7-4454-9c72-372adea3e452/scratch-2026-10-01-354e32/employee-collab-network/analysis/fig_centrality_top.png",
+      "width": 2550,
+      "height": 1105
+    },
+    "fig_temporal_heatmap": {
+      "path": "/Users/akilan/Library/Application Support/Claude/scratch-workspaces/9e19f909-7ff3-43fe-a56e-f80f1eabf7af/21db9c52-28f7-4454-9c72-372adea3e452/scratch-2026-10-01-354e32/employee-collab-network/analysis/fig_temporal_heatmap.png",
+      "width": 2322,
+      "height": 594
+    },
+    "fig_temporal_volume": {
+      "path": "/Users/akilan/Library/Application Support/Claude/scratch-workspaces/9e19f909-7ff3-43fe-a56e-f80f1eabf7af/21db9c52-28f7-4454-9c72-372adea3e452/scratch-2026-10-01-354e32/employee-collab-network/analysis/fig_temporal_volume.png",
+      "width": 2240,
+      "height": 1280
+    },
+    "fig_daily_rhythm": {
+      "path": "/Users/akilan/Library/Application Support/Claude/scratch-workspaces/9e19f909-7ff3-43fe-a56e-f80f1eabf7af/21db9c52-28f7-4454-9c72-372adea3e452/scratch-2026-10-01-354e32/employee-collab-network/analysis/fig_daily_rhythm.png",
+      "width": 2560,
+      "height": 768
+    }
+  }
+}

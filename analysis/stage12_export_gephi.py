@@ -9,7 +9,6 @@ instead (one edge per ordered pair, weight = email count), with node
 attributes for Louvain community and centrality, plus a precomputed layout,
 community colour and PageRank-based size so the file opens already readable.
 """
-import gzip
 import pickle
 from pathlib import Path
 
@@ -76,11 +75,11 @@ print("\nOpen in Gephi via File > Open (not Import Spreadsheet).")
 # Also write plain Source,Target,Weight edge tables for Gephi's Import
 # Spreadsheet, straight from the raw files (including the full dataset,
 # which is not part of graphs.pkl).
-DATA_DIR = OUT_DIR.parent / "data"
+DATA_DIR = OUT_DIR.parent / "data" / "email-Eu-core-temporal"
 for name in ["Dept1", "Dept2", "Dept3", "Dept4", None]:
     stem = f"email-Eu-core-temporal-{name}" if name else "email-Eu-core-temporal"
     weights = {}
-    with gzip.open(DATA_DIR / f"{stem}.gz", "rt") as f:
+    with open(DATA_DIR / f"{stem}.csv") as f:
         for line in f:
             parts = line.split()
             if parts:
